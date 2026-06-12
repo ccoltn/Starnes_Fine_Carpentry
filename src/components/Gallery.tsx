@@ -1,10 +1,10 @@
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 type GalleryItem = {
   src: string;
   alt: string;
-  type: 'image';
+  type: 'image' | 'video';
 };
 
 type Category = {
@@ -12,49 +12,73 @@ type Category = {
   items: GalleryItem[];
 };
 
+const imageBase = import.meta.env.BASE_URL;
+
 const categories: Category[] = [
   {
     label: 'Custom Shelving',
-    items: [],
+    items: [
+      { src: `${imageBase}images/gallery/IMG_5967.jpeg`, alt: 'Custom shelving detail', type: 'image' },
+      { src: `${imageBase}images/gallery/IMG_5974.jpeg`, alt: 'Custom shelving detail', type: 'image' },
+      { src: `${imageBase}images/Closet.mp4`, alt: 'Custom shelving video', type: 'video' },
+      { src: `${imageBase}images/gallery/IMG_7866.jpeg`, alt: 'Custom shelving detail', type: 'image' },
+      { src: `${imageBase}images/gallery/IMG_8094.jpeg`, alt: 'Custom shelving detail', type: 'image' },
+      { src: `${imageBase}images/gallery/IMG_7870.jpeg`, alt: 'Custom shelving detail', type: 'image' },
+      { src: `${imageBase}images/gallery/IMG_8084.jpeg`, alt: 'Custom shelving detail', type: 'image' },
+    ],
   },
   {
     label: 'Trim Work',
     items: [
-      { src: '/images/gallery/IMG_8691.jpeg', alt: 'Precision baseboard trim detail', type: 'image' },
+      { src: `${imageBase}images/gallery/IMG_8691.jpeg`, alt: 'Precision baseboard trim detail', type: 'image' },
+      { src: `${imageBase}images/gallery/IMG_0631.jpeg`, alt: 'Precision baseboard trim detail', type: 'image' },
+      { src: `${imageBase}images/gallery/IMG_8420.jpeg`, alt: 'Precision baseboard trim detail', type: 'image' },
     ],
   },
   {
     label: 'Tongue & Groove Backsplash & Ceilings',
-    items: [],
+    items: [
+      { src: `${imageBase}images/gallery/IMG_6976.jpeg`, alt: 'Tongue & Groove wood paneling', type: 'image' },
+      { src: `${imageBase}images/gallery/IMG_1094.jpeg`, alt: 'Tongue & Groove wood paneling', type: 'image' },
+    ],
   },
   {
     label: 'Siding',
-    items: [],
+    items: [
+      { src: `${imageBase}images/gallery/IMG_8100.jpeg`, alt: 'Siding Installation', type: 'image' },
+    ],
   },
   {
     label: 'Decking',
     items: [
-      { src: '/images/gallery/IMG_8835.jpeg', alt: 'Custom deck with cross-brace railings', type: 'image' },
-      { src: '/images/gallery/IMG_8732.jpeg', alt: 'Deck steps with railing in front of French doors', type: 'image' },
+      { src: `${imageBase}images/gallery/IMG_8835.jpeg`, alt: 'Custom deck with cross-brace railings', type: 'image' },
+      { src: `${imageBase}images/gallery/IMG_8732.jpeg`, alt: 'Deck steps with railing in front of French doors', type: 'image' },
     ],
   },
   {
     label: 'Wainscoting',
-    items: [],
+    items: [
+      { src: `${imageBase}images/gallery/IMG_8477.jpeg`, alt: 'Decorative Wall Paneling', type: 'image' },
+    ],
   },
   {
     label: 'Custom Dining Benches',
-    items: [],
+    items: [
+      { src: `${imageBase}images/Bench3.mp4`, alt: 'Handcrafted built-in dining bench', type: 'video' },
+    ],
   },
   {
     label: 'Custom Jobs',
-    items: [],
+    items: [
+      { src: `${imageBase}images/gallery/IMG_7936.jpeg`, alt: '', type: 'image' },
+    ],
   },
 ];
 
-function CategorySlider({ items, label }: { items: GalleryItem[]; label: string }) {
+function CategorySlider({ items }: { items: GalleryItem[] }) {
   const [index, setIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const prev = () => setIndex((i) => (i - 1 + items.length) % items.length);
   const next = () => setIndex((i) => (i + 1) % items.length);
@@ -70,6 +94,27 @@ function CategorySlider({ items, label }: { items: GalleryItem[]; label: string 
     touchStartX.current = null;
   };
 
+  useEffect(() => {
+    if (!videoRef.current || items[index]?.type !== 'video') return;
+
+    const video = videoRef.current;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.muted = true;
+          video.loop = true;
+          video.play().catch(() => undefined);
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.25 }
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [index, items]);
+
   if (items.length === 0) {
     return (
       <div className="aspect-[4/3] bg-sage-100 rounded-sm flex items-center justify-center">
@@ -82,15 +127,27 @@ function CategorySlider({ items, label }: { items: GalleryItem[]; label: string 
 
   return (
     <div
-      className="relative aspect-[4/3] overflow-hidden rounded-sm group"
+      className="relative aspect-[4/3] overflow-hidden rounded-sm border border-white/10 bg-forest-800 shadow-xl group"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <img
-        src={items[index].src}
-        alt={items[index].alt}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-      />
+      {items[index].type === 'video' ? (
+        <video
+          ref={videoRef}
+          src={items[index].src}
+          muted
+          playsInline
+          loop
+          preload="metadata"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      ) : (
+        <img
+          src={items[index].src}
+          alt={items[index].alt}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      )}
 
       {items.length > 1 && (
         <>
@@ -199,7 +256,7 @@ export default function Gallery() {
           {categories[activeTab].items.length === 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[0, 1, 2].map((i) => (
-                <div key={i} className="aspect-[4/3] bg-forest-800 rounded-sm flex flex-col items-center justify-center gap-2">
+                <div key={i} className="aspect-[4/3] rounded-sm border border-white/10 bg-forest-800 shadow-xl flex flex-col items-center justify-center gap-2">
                   <div className="w-10 h-10 border-2 border-dashed border-sage-600 rounded-full flex items-center justify-center">
                     <span className="text-sage-500 text-lg">+</span>
                   </div>
@@ -210,12 +267,12 @@ export default function Gallery() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {categories[activeTab].items.map((item, i) => (
-                <CategorySlider key={i} items={[item]} label={categories[activeTab].label} />
+                <CategorySlider key={i} items={[item]} />
               ))}
               {/* Fill remaining slots */}
               {categories[activeTab].items.length < 3 &&
                 Array.from({ length: 3 - categories[activeTab].items.length }).map((_, i) => (
-                  <div key={`empty-${i}`} className="aspect-[4/3] bg-forest-800 rounded-sm flex flex-col items-center justify-center gap-2">
+                  <div key={`empty-${i}`} className="aspect-[4/3] rounded-sm border border-white/10 bg-forest-800 shadow-xl flex flex-col items-center justify-center gap-2">
                     <div className="w-10 h-10 border-2 border-dashed border-sage-600 rounded-full flex items-center justify-center">
                       <span className="text-sage-500 text-lg">+</span>
                     </div>

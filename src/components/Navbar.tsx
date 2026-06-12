@@ -10,6 +10,7 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const imageBase = import.meta.env.BASE_URL;
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -29,7 +30,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-20">
           <a href="#home" className="flex items-center gap-3">
             <img
-              src="/images/4.PNG"
+              src={`${imageBase}images/4.PNG`}
               alt="Starnes Fine Carpentry"
               className="h-12 w-auto"
             />

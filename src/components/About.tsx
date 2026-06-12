@@ -1,13 +1,7 @@
-import { Award, Users, Clock, Hammer } from 'lucide-react';
-
-const stats = [
-  { icon: Hammer, value: '500+', label: 'Projects Completed' },
-  { icon: Users, value: '200+', label: 'Happy Clients' },
-  { icon: Award, value: '10+', label: 'Years Experience' },
-  { icon: Clock, value: '100%', label: 'Satisfaction Rate' },
-];
 
 export default function About() {
+  const imageBase = import.meta.env.BASE_URL;
+
   return (
     <section id="about" className="py-24 bg-cream-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -16,20 +10,16 @@ export default function About() {
           <div className="relative">
             <div className="absolute -top-4 -left-4 w-full h-full border-2 border-forest-400 rounded-sm" />
             <img
-              src="/images/IMG_1226.jpeg"
+              src={`${imageBase}images/IMG_1226.jpeg`}
               alt="Starnes Fine Carpentry craftsman at work"
               className="relative w-full max-w-md mx-auto lg:mx-0 rounded-sm shadow-2xl object-cover aspect-[3/4]"
             />
-            <div className="absolute -bottom-6 -right-6 bg-forest-600 text-cream-50 py-4 px-6 rounded-sm shadow-lg">
-              <p className="font-serif text-2xl font-bold">10+</p>
-              <p className="text-sage-200 text-xs uppercase tracking-widest font-medium">Years of Craft</p>
-            </div>
           </div>
 
           {/* Text side */}
           <div>
             <p className="text-forest-500 font-semibold uppercase tracking-widest text-sm mb-3">
-              Our Story
+          
             </p>
             <h2 className="font-serif text-4xl sm:text-5xl font-bold text-forest-800 mb-4">
               About Starnes<br />Fine Carpentry
@@ -71,24 +61,6 @@ export default function About() {
           </div>
         </div>
 
-        {/* Stats bar */}
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6">
-          {stats.map((stat) => {
-            const Icon = stat.icon;
-            return (
-              <div
-                key={stat.label}
-                className="text-center bg-white p-6 rounded-sm shadow-sm border border-sage-100 hover:shadow-md transition-shadow"
-              >
-                <div className="flex justify-center mb-3">
-                  <Icon size={28} className="text-forest-500" />
-                </div>
-                <p className="font-serif text-3xl font-bold text-forest-800">{stat.value}</p>
-                <p className="text-forest-600 text-sm mt-1 font-medium">{stat.label}</p>
-              </div>
-            );
-          })}
-        </div>
       </div>
     </section>
   );

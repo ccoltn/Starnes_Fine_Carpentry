@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Send, CheckCircle, AlertCircle } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { submitQuoteToGoogleSheet } from '../lib/googleSheets';
 
 const projectTypes = [
   'Custom Shelving',
@@ -34,17 +34,27 @@ export default function QuoteForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setState('submitting');
     setErrorMsg('');
 
-    const { error } = await supabase.from('quote_requests').insert([form]);
-
-    if (error) {
+    if (!form.phone.trim()) {
       setState('error');
-      setErrorMsg('Something went wrong. Please try again or call us directly.');
-    } else {
+      setErrorMsg('Phone number is required so we can contact you about your project.');
+      return;
+    }
+
+    setState('submitting');
+
+    try {
+      await submitQuoteToGoogleSheet(form);
       setState('success');
       setForm({ name: '', email: '', phone: '', project_type: '', description: '' });
+    } catch (error) {
+      setState('error');
+      setErrorMsg(
+        error instanceof Error
+          ? error.message
+          : 'Something went wrong. Please try again or call us directly.'
+      );
     }
   };
 
@@ -157,13 +167,14 @@ export default function QuoteForm() {
                   </div>
                   <div>
                     <label className="block text-forest-700 text-xs font-semibold uppercase tracking-wider mb-2">
-                      Phone
+                      Phone *
                     </label>
                     <input
                       type="tel"
                       name="phone"
                       value={form.phone}
                       onChange={handleChange}
+                      required
                       placeholder="(850) 000-0000"
                       className={inputClass}
                     />
@@ -172,14 +183,13 @@ export default function QuoteForm() {
 
                 <div>
                   <label className="block text-forest-700 text-xs font-semibold uppercase tracking-wider mb-2">
-                    Email Address *
+                    Email Address
                   </label>
                   <input
                     type="email"
                     name="email"
                     value={form.email}
                     onChange={handleChange}
-                    required
                     placeholder="you@example.com"
                     className={inputClass}
                   />

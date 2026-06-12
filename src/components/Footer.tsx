@@ -1,4 +1,5 @@
 export default function Footer() {
+  const imageBase = import.meta.env.BASE_URL;
   const year = new Date().getFullYear();
 
   return (
@@ -8,7 +9,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <img
-              src="/images/4.PNG"
+              src={`${imageBase}images/4.PNG`}
               alt="Starnes Fine Carpentry"
               className="h-20 w-auto mb-4"
             />

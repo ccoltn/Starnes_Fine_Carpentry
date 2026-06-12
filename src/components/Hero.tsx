@@ -1,6 +1,8 @@
 import { ChevronDown } from 'lucide-react';
 
 export default function Hero() {
+  const imageBase = import.meta.env.BASE_URL;
+
   return (
     <section
       id="home"
@@ -9,7 +11,7 @@ export default function Hero() {
       {/* Background image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url(/images/gallery/IMG_8835.jpeg)' }}
+        style={{ backgroundImage: `url(${imageBase}images/gallery/IMG_1094.jpeg)` }}
       />
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-forest-900/80 via-forest-800/70 to-forest-900/90" />
@@ -17,7 +19,7 @@ export default function Hero() {
       <div className="relative z-10 text-center px-4 sm:px-6 max-w-4xl mx-auto">
         <div className="mb-8">
           <img
-            src="/images/4.PNG"
+            src={`${imageBase}images/4.PNG`}
             alt="Starnes Fine Carpentry"
             className="mx-auto h-40 sm:h-52 w-auto drop-shadow-2xl"
           />
